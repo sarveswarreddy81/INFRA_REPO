@@ -1,4 +1,4 @@
-pipipeline {
+pipeline {
     agent { label 'JAVAJDKSPC' }
 
     stages {
