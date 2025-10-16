@@ -1,28 +1,28 @@
 pipeline {
     agent { label 'JAVAJDKSPC' }
+stage('Setup Tools') {
+    steps {
+        sh '''
+        # Install tfsec if not found
+        if ! command -v tfsec &> /dev/null; then
+            echo "Installing tfsec..."
+            curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+        fi
 
-    stages {
-        stage('Setup Tools') {
-            steps {
-                sh '''
-                if ! command -v tfsec &> /dev/null; then
-                    echo "Installing tfsec..."
-                    curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-                    sudo mv tfsec /usr/local/bin/
-                fi
+        # Install tflint if not found
+        if ! command -v tflint &> /dev/null; then
+            echo "Installing tflint..."
+            curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+        fi
 
-                if ! command -v tflint &> /dev/null; then
-                    echo "Installing tflint..."
-                    curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-                    sudo mv tflint /usr/local/bin/
-                fi
+        echo "=== Versions ==="
+        terraform --version
+        tfsec --version
+        tflint --version
+        '''
+    }
+}
 
-                terraform --version
-                tfsec --version
-                tflint --version
-                '''
-            }
-        }
 
         stage('git checkout') {
             steps {
